@@ -18,3 +18,23 @@ SCHEMA = {
     "required": ["script", "image_prompt", "video_prompt"],
     "additionalProperties": False,
 }
+
+
+def write_script(text):
+    data = call("Script", "/chat/completions", {
+        "models": MODELS,  # if the first model is down, OpenRouter tries the next
+        "messages": [{"role": "user", "content": PROMPT + text}],
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {"name": "video_plan", "strict": True, "schema": SCHEMA},
+        },
+        "provider": {"require_parameters": True},  # only use providers that support the schema
+    })
+    return json.loads(data["choices"][0]["message"]["content"])
+
+
+if __name__ == "__main__":
+    text = open("output/transcript.txt", encoding="utf-8").read()
+    script = write_script(text)
+    print(json.dumps(script, indent=2))
+    json.dump(script, open("output/script.json", "w"), indent=2)
