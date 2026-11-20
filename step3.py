@@ -20,3 +20,14 @@ def make_image(script):
     image_bytes = base64.b64decode(image_text)
     open("output/cover.png", "wb").write(image_bytes)
     return "output/cover.png"
+
+
+if __name__ == "__main__":
+    # What settings does this model accept? No guessing needed
+    models = requests.get(API + "/images/models").json()["data"]
+    model = next(m for m in models if m["id"] == MODEL)
+    for setting, allowed in model["supported_parameters"].items():
+        print(setting, allowed.get("values", ""))
+
+    script = json.load(open("output/script.json"))
+    print(make_image(script))
