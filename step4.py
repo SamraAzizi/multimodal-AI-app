@@ -21,3 +21,8 @@ def speak(script):
 
     add_cost("Voiceover", MODEL, lookup_cost(response.headers["X-Generation-Id"]))
     return "output/voiceover.wav"
+
+
+if __name__ == "__main__":
+    script = json.load(open("output/script.json"))
+    print(speak(script))
