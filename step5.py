@@ -26,3 +26,10 @@ def make_video(script, image_path):
             "frame_type": "first_frame",  # the clip starts on our cover image
         }],
     }).json()
+    # Step 2: video takes a couple of minutes, so check back every 15 seconds until it's done
+    while job["status"] in ("pending", "in_progress"):
+        print("Video is", job["status"])
+        time.sleep(15)
+        job = requests.get(job["polling_url"], headers=HEADERS).json()
+    if job["status"] != "completed":
+        raise Exception(job.get("error"))
