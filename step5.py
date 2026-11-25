@@ -26,6 +26,7 @@ def make_video(script, image_path):
             "frame_type": "first_frame",  # the clip starts on our cover image
         }],
     }).json()
+
     # Step 2: video takes a couple of minutes, so check back every 15 seconds until it's done
     while job["status"] in ("pending", "in_progress"):
         print("Video is", job["status"])
@@ -33,3 +34,14 @@ def make_video(script, image_path):
         job = requests.get(job["polling_url"], headers=HEADERS).json()
     if job["status"] != "completed":
         raise Exception(job.get("error"))
+
+    # Step 3: download the finished video and save it
+    video = requests.get(job["unsigned_urls"][0], headers=HEADERS).content
+    open("output/clip.mp4", "wb").write(video)
+    add_cost("Video", MODEL, job["usage"]["cost"])
+    return "output/clip.mp4"
+
+
+if __name__ == "__main__":
+    script = json.load(open("output/script.json"))
+    print(make_video(script, "output/cover.png"))
