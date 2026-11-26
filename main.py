@@ -10,3 +10,13 @@ def print_cost_receipt():
     print("\nCOST RECEIPT")
     for step, cost in costs.items():
         print(f"{step:<55} ${cost:.4f}")
+    print(f"{'TOTAL':<55} ${sum(costs.values()):.4f}")
+
+
+voice_note = record()
+text = transcribe(voice_note)
+script = write_script(text)
+image = make_image(script)
+audio = speak(script)
+video = make_video(script, image)
+print_cost_receipt()
